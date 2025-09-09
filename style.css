@@ -1,6 +1,7 @@
 body {
     margin: 0;
     background-color: #1F1F1F;
+    text-align: center;
 }
 
 #app {
@@ -9,4 +10,9 @@ body {
     margin: 0 auto;
     margin-top: 20px;
     background-color: #181818;
+}
+
+.canvasWrapper {
+    display: inline-block;
+    margin: 0 auto;
 }

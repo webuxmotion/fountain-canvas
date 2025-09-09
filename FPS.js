@@ -18,7 +18,7 @@ class FPS {
   }
 
   draw(ctx, x = 10, y = 20) {
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "#1F1F1F";
     ctx.font = "16px monospace";
     ctx.fillText(`FPS: ${this.fps}`, x, y);
   }

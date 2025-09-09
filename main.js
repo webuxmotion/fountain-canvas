@@ -3,23 +3,33 @@ const ctx = canvas.getContext("2d");
 const fpsMeter = new FPS();
 
 const gravity = 0.2;
-const fireColors1 = [
+const fireColors = [
   "rgba(255, 245, 204, 0.5)", // pale white-yellow
   "rgba(255, 217, 102, 0.5)", // bright yellow
   "rgba(255, 140, 66, 0.5)", // orange
   "rgba(233, 79, 30, 0.5)", // red-orange
   "rgba(124, 10, 2, 0.5)", // dark ember red
 ];
-const fireColors2 = [
-  "#FFF5CC", // pale white-yellow
-  "#FFD966", // bright yellow
-  "#FF8C42", // orange
-  "#E94F1E", // red-orange
-  "#7C0A02", // dark ember red
+const waterColors = [
+  "rgba(204, 245, 255, 0.5)", // very pale cyan
+  "rgba(102, 217, 255, 0.5)", // light blue
+  "rgba(66, 140, 255, 0.5)", // medium blue
+  "rgba(30, 79, 233, 0.5)", // deep blue
+  "rgba(2, 10, 124, 0.5)", // dark navy
 ];
-const fireColors = fireColors2;
-const totalBalls = 1_000;
+let palette = fireColors;
+const totalBalls = 1000;
 const balls = generateBalls();
+
+document.querySelectorAll(".js-pick-mode").forEach((el) => {
+  el.addEventListener("click", (e) => {
+    if (e.target.dataset.mode == "fire") {
+      palette = fireColors;
+    } else {
+      palette = waterColors;
+    }
+  });
+});
 
 (function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -53,8 +63,8 @@ function setBallParams(ball) {
   ball.vy = Math.random() * -10 - 10;
   ball.radius = 50;
 
-  const colorIndex = Math.floor(Math.random() * fireColors.length);
-  ball.color = fireColors[colorIndex];
+  const colorIndex = Math.floor(Math.random() * palette.length);
+  ball.color = palette[colorIndex];
 }
 
 function draw(ball) {

@@ -66,7 +66,7 @@ const sizeLoc = gl.getAttribLocation(program, "a_size");
 const colorLoc = gl.getAttribLocation(program, "a_color");
 
 // Buffers
-const totalBalls = 10000;
+const totalBalls = 1000000;
 const positions = new Float32Array(totalBalls * 2);
 const sizes = new Float32Array(totalBalls);
 const colors = new Float32Array(totalBalls * 3);
