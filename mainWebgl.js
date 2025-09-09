@@ -10,7 +10,13 @@ const vertexShaderSource = `
   varying vec3 v_color;
 
   void main() {
-    gl_Position = vec4((a_position / vec2(${canvas.width.toFixed(1)}, ${canvas.height.toFixed(1)})) * 2.0 - 1.0, 0, 1);
+    // flip Y so 0,0 is top-left like Canvas2D
+    gl_Position = vec4(
+      (a_position.x / ${canvas.width.toFixed(1)}) * 2.0 - 1.0,
+      1.0 - (a_position.y / ${canvas.height.toFixed(1)}) * 2.0,
+      0.0,
+      1.0
+    );
     gl_PointSize = a_size;
     v_color = a_color;
   }
@@ -21,7 +27,7 @@ const fragmentShaderSource = `
   varying vec3 v_color;
 
   void main() {
-    // make circular points with smooth edges
+    // circular points with smooth alpha edges
     vec2 coord = gl_PointCoord - vec2(0.5);
     float dist = length(coord);
     if (dist > 0.5) discard;
@@ -35,6 +41,9 @@ function createShader(type, source) {
   const shader = gl.createShader(type);
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.error("Shader compile failed:", gl.getShaderInfoLog(shader));
+  }
   return shader;
 }
 
@@ -46,6 +55,9 @@ const program = gl.createProgram();
 gl.attachShader(program, vertexShader);
 gl.attachShader(program, fragmentShader);
 gl.linkProgram(program);
+if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+  console.error("Program link failed:", gl.getProgramInfoLog(program));
+}
 gl.useProgram(program);
 
 // Look up attributes
@@ -60,21 +72,21 @@ const sizes = new Float32Array(totalBalls);
 const colors = new Float32Array(totalBalls * 3);
 const velocities = new Float32Array(totalBalls * 2);
 
+const palette = [
+  [1.0, 0.96, 0.8],
+  [1.0, 0.85, 0.4],
+  [1.0, 0.55, 0.26],
+  [0.91, 0.2, 0.12],
+  [0.48, 0.04, 0.01],
+];
+
 for (let i = 0; i < totalBalls; i++) {
   positions[i * 2] = canvas.width / 2;
   positions[i * 2 + 1] = canvas.height;
   velocities[i * 2] = Math.random() * 6 - 3;
-  velocities[i * 2 + 1] = Math.random() * -10 - 10;
+  velocities[i * 2 + 1] = -(Math.random() * 10 + 10); // shoot upward
   sizes[i] = 20 + Math.random() * 20;
 
-  // fire color palette
-  const palette = [
-    [1.0, 0.96, 0.8],
-    [1.0, 0.85, 0.4],
-    [1.0, 0.55, 0.26],
-    [0.91, 0.2, 0.12],
-    [0.48, 0.04, 0.01],
-  ];
   const c = palette[Math.floor(Math.random() * palette.length)];
   colors[i * 3] = c[0];
   colors[i * 3 + 1] = c[1];
@@ -97,25 +109,22 @@ const colorBuffer = makeBuffer(colors, colorLoc, 3);
 
 // Animation loop
 function animate() {
-  // update particle physics on CPU
   for (let i = 0; i < totalBalls; i++) {
     positions[i * 2] += velocities[i * 2];
     positions[i * 2 + 1] += velocities[i * 2 + 1];
-    velocities[i * 2 + 1] += 0.2; // gravity
+    velocities[i * 2 + 1] += 0.2; // gravity pushes down
 
     if (positions[i * 2 + 1] > canvas.height) {
       positions[i * 2] = canvas.width / 2;
       positions[i * 2 + 1] = canvas.height;
       velocities[i * 2] = Math.random() * 6 - 3;
-      velocities[i * 2 + 1] = Math.random() * -10 - 10;
+      velocities[i * 2 + 1] = -(Math.random() * 10 + 10); // reset upward
     }
   }
 
-  // update buffers
   gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, positions);
 
-  // clear + draw
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.POINTS, 0, totalBalls);
 
