@@ -18,6 +18,7 @@ const waterColors = [
   "rgba(2, 10, 124, 0.5)", // dark navy
 ];
 let palette = fireColors;
+let word = "fire";
 const totalBalls = 1000;
 const balls = generateBalls();
 
@@ -25,8 +26,10 @@ document.querySelectorAll(".js-pick-mode").forEach((el) => {
   el.addEventListener("click", (e) => {
     if (e.target.dataset.mode == "fire") {
       palette = fireColors;
+      word = "fire";
     } else {
       palette = waterColors;
+      word = "water";
     }
   });
 });
@@ -35,6 +38,17 @@ document.querySelectorAll(".js-pick-mode").forEach((el) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   balls.forEach(draw);
+
+  ctx.globalCompositeOperation = "destination-atop";
+
+  ctx.font = "bold 200px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#1F1F1F";
+  ctx.textBaseline = "middle";
+  ctx.fillText(word, canvas.width / 2, canvas.height / 2);
+
+  // reset to default mode
+  ctx.globalCompositeOperation = "source-over";
 
   fpsMeter.update();
   fpsMeter.draw(ctx);
