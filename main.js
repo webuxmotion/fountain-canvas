@@ -19,7 +19,7 @@ const waterColors = [
 ];
 let palette = fireColors;
 let word = "fire";
-const totalBalls = 1000;
+const totalBalls = 20;
 const balls = generateBalls();
 
 document.querySelectorAll(".js-pick-mode").forEach((el) => {
@@ -41,7 +41,7 @@ document.querySelectorAll(".js-pick-mode").forEach((el) => {
 
   ctx.globalCompositeOperation = "destination-atop";
 
-  ctx.font = "bold 200px sans-serif";
+  ctx.font = "bold 400px sans-serif";
   ctx.textAlign = "center";
   ctx.fillStyle = "#1F1F1F";
   ctx.textBaseline = "middle";
@@ -75,7 +75,7 @@ function setBallParams(ball) {
   ball.y = canvas.height;
   ball.vx = Math.random() * 6 - 3;
   ball.vy = Math.random() * -10 - 10;
-  ball.radius = 50;
+  ball.radius = 200;
 
   const colorIndex = Math.floor(Math.random() * palette.length);
   ball.color = palette[colorIndex];
